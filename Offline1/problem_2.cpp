@@ -133,8 +133,50 @@ void drawAxes() {
 //     glEnd();   // Done drawing the pyramid
 // }
 
+float sides=100.0f;
+
 float scaledPoint(float x){
     return scaleFactor*(x-(1/3.0));
+}
+
+void drawCylinderSegment(float radius, float height, float startAngle, float endAngle) {
+    float angleStep = (endAngle - startAngle) / sides;
+
+    // Draw the sides of the cylinder
+
+    glBegin(GL_QUAD_STRIP);
+    for (int i = 0; i <= sides; i++) {
+        float angle = startAngle + i * angleStep;
+        float x = radius * cos(angle);
+        float y = radius * sin(angle);
+
+        glVertex3f(x, y, -height/2);               // Bottom vertex
+        glVertex3f(x, y, height/2);              // Top vertex
+    }
+    glEnd();
+
+    // Draw the top and bottom circles of the cylinder
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex3f(0.0f, 0.0f, -height/2);            // Center of the bottom circle
+    for (int i = 0; i <= sides; i++) {
+        float angle = startAngle + i * angleStep;
+        float x = radius * cos(angle);
+        float y = radius * sin(angle);
+
+        glVertex3f(x, y, -height/2);               // Vertex on the bottom circle
+    }
+    glEnd();
+
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex3f(0.0f, 0.0f, height/2);           // Center of the top circle
+    for (int i = sides; i >= 0; i--) {
+        float angle = startAngle + i * angleStep;
+        float x = radius * cos(angle);
+        float y = radius * sin(angle);
+
+        glVertex3f(x, y, height/2);              // Vertex on the top circle
+    }
+    glEnd();
 }
 
 void drawTriangle(){
@@ -164,6 +206,63 @@ void drawTriangle(){
     glEnd();
     
     glPopMatrix();
+
+
+    glPushMatrix();
+    float finalRadius=1.0/sqrt(3);
+    float currentRadius=(1.0-scaleFactor*scaleFactor)*finalRadius;
+
+
+    /*
+        scaleFactor=1 centerY =0
+        scaleFactor=0 centerY=-1/sqrt(2)
+
+    */
+
+    float finalCenterY=1.0/sqrt(2);
+    float currentCenter=(1.0-scaleFactor*scaleFactor)*finalCenterY;
+
+    glColor3f(0.5f,0.0f,0.5f);
+    glTranslatef(0,0.5f,0.5f);
+    glRotatef(45.0f,1,0,0);
+    glTranslatef(0,-currentCenter,0.0f);
+    drawCylinderSegment(currentRadius,sqrt(2)*scaleFactor*scaleFactor,0.0f,360.0f);
+
+    glPopMatrix();
+
+
+    // glPushMatrix();
+
+    // finalRadius=1.0/sqrt(3);
+    // currentRadius=(1.0-scaleFactor*scaleFactor)*finalRadius;
+    // finalCenterY=1.0/sqrt(2);
+    // float currentCenter=(1.0-scaleFactor*scaleFactor)*finalCenterY;
+    
+    // glColor3f(0.5f,0.0f,0.5f);
+    // glTranslatef(0.5,0.0f,0.5f);
+    // //glRotatef(90.0f,0,1,0);
+    // glRotatef(-45.0f,0,1,0);
+    // //glTranslatef(0,-currentCenter,0.0f);
+    // //drawAxes();
+    // drawCylinderSegment(currentRadius,sqrt(2)*scaleFactor*scaleFactor,0.0f,360.0f);
+
+    // glPopMatrix();
+
+
+    // glPushMatrix();
+    
+    // glColor3f(0.5f,0.0f,0.5f);
+    // glTranslatef(0.5,0.5f,0.0f);
+    // glRotatef(90.0f,1,1,0);
+    // //glRotatef(-45.0f,0,0,1);
+    // //glTranslatef(0,-currentCenter,0.0f);
+    // drawAxes();
+    // drawCylinderSegment(currentRadius,sqrt(2)*scaleFactor*scaleFactor,0.0f,360.0f);
+
+    // glPopMatrix();
+
+
+    
 
     
 
@@ -229,6 +328,9 @@ void drawOctaHedron(){
 
     glPushMatrix();
 
+
+    glColor3f(0.5f, 0.5f, 0.0f); 
+    
     float finalRadius=1.0/sqrt(3);
     float currentRadius=(1.0-scaleFactor*scaleFactor)*finalRadius;
     float initialCenter=1.0f;
@@ -262,7 +364,6 @@ void drawOctaHedron(){
     glRotatef(180.0f,0,0,1);
     glTranslatef(currentCenter,0,0);
     sphere.drawFace(0);
-
 
     // sphere.drawFace(1);
     // sphere.drawFace(2);
